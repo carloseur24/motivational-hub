@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Citas & Reflexiones</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .font-poppins { font-family: 'Poppins', sans-serif; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-montserrat { font-family: 'Montserrat', sans-serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col lg:flex-row overflow-x-hidden">
+
+    <!-- LEFT PANEL: SHADCN STYLE SIDEBAR WITH STEP WIZARD -->
+    <aside class="w-full lg:w-[500px] bg-slate-900/90 backdrop-blur-xl border-r border-slate-800/80 p-5 md:p-6 flex flex-col h-auto lg:h-screen lg:overflow-y-auto shrink-0 z-10">
+        
+        <!-- HEADER -->
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800/80">
+            <div>
+                <h1 class="text-lg font-semibold text-slate-100 tracking-tight flex items-center gap-2">
+                    <span class="p-1.5 bg-amber-500/10 text-amber-400 rounded-md border border-amber-500/20">
+                        <i class="fa-solid fa-mountain text-sm"></i>
+                    </span>
+                    Reflexiones Suite
+                </h1>
+                <p class="text-xs text-slate-400">Creador de citas para redes sociales</p>
+            </div>
+            <button id="openNewModalBtn" class="px-3 py-1.5 bg-slate-100 hover:bg-white text-slate-950 font-medium text-xs rounded-md transition duration-150 flex items-center gap-1.5 shadow-sm active:scale-95">
+                <i class="fa-solid fa-plus text-xs"></i> Nueva Cita
+            </button>
+        </div>
+
+        <!-- SHADCN WIZARD STEP INDICATOR -->
+        <div class="mb-6 p-1.5 bg-slate-950/80 rounded-lg border border-slate-800/80 grid grid-cols-4 gap-1 text-[11px] font-medium">
+            <button id="stepBtn1" onclick="goToStep(1)" class="py-2 px-1 rounded-md bg-slate-800 text-amber-400 font-semibold border border-slate-700/60 shadow-sm flex flex-col items-center gap-1 transition">
+                <span class="text-[10px] opacity-75">PASO 1</span>
+                <span>Contenido</span>
+            </button>
+            <button id="stepBtn2" onclick="goToStep(2)" class="py-2 px-1 rounded-md text-slate-400 hover:text-slate-200 flex flex-col items-center gap-1 transition">
+                <span class="text-[10px] opacity-75">PASO 2</span>
+                <span>Efectos</span>
+            </button>
+            <button id="stepBtn3" onclick="goToStep(3)" class="py-2 px-1 rounded-md text-slate-400 hover:text-slate-200 flex flex-col items-center gap-1 transition">
+                <span class="text-[10px] opacity-75">PASO 3</span>
+                <span>Tipografía</span>
+            </button>
+            <button id="stepBtn4" onclick="goToStep(4)" class="py-2 px-1 rounded-md text-slate-400 hover:text-slate-200 flex flex-col items-center gap-1 transition">
+                <span class="text-[10px] opacity-75">PASO 4</span>
+                <span>Publicar</span>
+            </button>
+        </div>
+
+        <!-- WIZARD STEP CONTAINERS -->
+        <div class="flex-1 space-y-6">
+
+            <!-- STEP 1: SELECCIÓN DE CONTENIDO Y FONDO BASE -->
+            <div id="step1Container" class="space-y-6">
+                
+                <!-- COHERENT BLOCK: SELECCIÓN DE CITA -->
+                <div class="bg-slate-950/50 p-4 rounded-xl border border-slate-800/80 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-medium text-slate-300 tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-quote-left text-amber-400"></i> Seleccionar Frase / Cita
+                        </label>
+                        <span id="quoteStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            NUEVA
+                        </span>
+                    </div>
+
+                    <select id="quoteSelect" class="w-full bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-md p-2.5 focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500 outline-none transition">
+                        <!-- Dynamic quotes -->
+                    </select>
+
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button id="randomUnusedBtn" class="px-3 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-md transition flex items-center justify-center gap-1.5 border border-slate-700/50">
+                            <i class="fa-solid fa-shuffle text-amber-400 text-xs"></i> Aleatoria Libre
+                        </button>
+                        <button id="toggleUsedBtn" class="px-3 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-md transition flex items-center justify-center gap-1.5 border border-slate-700/50">
+                            <i class="fa-solid fa-check text-emerald-400 text-xs"></i> Marcar Estado
+                        </button>
+                    </div>
+                </div>
+
+                <!-- COHERENT BLOCK: SELECCIÓN DE FONDO BASE -->
+                <div class="bg-slate-950/50 p-4 rounded-xl border border-slate-800/80 space-y-3">
+                    <label class="text-xs font-medium text-slate-300 tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-image text-amber-400"></i> Galería & Fondos HD
+                    </label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="changeBackground('mist')" class="py-2.5 px-2 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs rounded-md border border-slate-800 text-center transition flex flex-col items-center gap-1">
+                            <span class="text-base">🏔️</span> Niebla
+                        </button>
+                        <button onclick="changeBackground('dusk')" class="py-2.5 px-2 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs rounded-md border border-slate-800 text-center transition flex flex-col items-center gap-1">
+                            <span class="text-base">🌅</span> Atardecer
+                        </button>
+                        <button onclick="changeBackground('dark')" class="py-2.5 px-2 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs rounded-md border border-slate-800 text-center transition flex flex-col items-center gap-1">
+                            <span class="text-base">🌌</span> Noche
+                        </button>
+                        <button onclick="changeBackground('unsplash_mountains')" class="py-2.5 px-2 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs rounded-md border border-slate-800 text-center transition flex flex-col items-center gap-1">
+                            <span class="text-base">📸</span> Montañas
+                        </button>
+                        <button onclick="changeBackground('unsplash_forest')" class="py-2.5 px-2 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs rounded-md border border-slate-800 text-center transition flex flex-col items-center gap-1">
+                            <span class="text-base">🌲</span> Bosque
+                        </button>
+                        <button onclick="changeBackground('unsplash_space')" class="py-2.5 px-2 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs rounded-md border border-slate-800 text-center transition flex flex-col items-center gap-1">
+                            <span class="text-base">✨</span> Cósmico
+                        </button>
+                    </div>
+
+                    <!-- AI GENERATION ACCORDION -->
+                    <div class="pt-2 border-t border-slate-800/60 space-y-2">
+                        <div class="text-[11px] font-medium text-amber-400 flex items-center justify-between">
+                            <span><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Generar Arte IA con Nano Banana</span>
+                        </div>
+                        <div class="space-y-2">
+                            <textarea id="aiPromptInput" rows="2" placeholder="Escribe tu idea para el fondo..." class="w-full bg-slate-900 border border-slate-800 text-slate-200 p-2 text-xs rounded-md focus:ring-1 focus:ring-amber-500/50 outline-none"></textarea>
+                            <button id="generateAiBgBtn" onclick="generateAiBackground()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-medium text-xs rounded-md transition border border-amber-500/30 flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-sparkles text-xs"></i> Crear Arte Personalizado
+                            </button>
+                            <div id="aiStatusMsg" class="hidden p-2 bg-slate-900 rounded border border-slate-800 text-[11px] text-center text-amber-400">
+                                <i class="fa-solid fa-spinner fa-spin mr-1"></i> Generando imagen...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- STEP 2: CONTROLES AVANZADOS DE IMAGEN Y EFECTOS -->
+            <div id="step2Container" class="space-y-6 hidden">
+                
+                <div class="bg-slate-950/50 p-4 rounded-xl border border-slate-800/80 space-y-4">
+                    <h3 class="text-xs font-semibold text-slate-200 tracking-wide uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-amber-400"></i> Ajustes de Imagen & Oscuridad
+                    </h3>
+
+                    <!-- Overlay Slider -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-300">Oscuridad (Dark Overlay)</span>
+                            <span id="overlayVal" class="text-amber-400 font-mono">65%</span>
+                        </div>
+                        <input type="range" id="overlayRange" min="0" max="95" value="65" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                    </div>
+
+                    <!-- Blur Slider -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-300">Desenfoque (Image Blur)</span>
+                            <span id="blurVal" class="text-amber-400 font-mono">0px</span>
+                        </div>
+                        <input type="range" id="blurRange" min="0" max="20" value="0" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                    </div>
+
+                    <!-- Image Rotation Slider -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-300">Rotación de Imagen</span>
+                            <span id="rotationVal" class="text-amber-400 font-mono">0°</span>
+                        </div>
+                        <input type="range" id="rotationRange" min="-180" max="180" value="0" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                    </div>
+                </div>
+
+                <!-- COHERENT BLOCK: FILTROS ESTÉTICOS DE IMAGEN -->
+                <div class="bg-slate-950/50 p-4 rounded-xl border border-slate-800/80 space-y-3">
+                    <label class="text-xs font-semibold text-slate-200 tracking-wide uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-palette text-amber-400"></i> Filtros de Estilo & Color
+                    </label>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button onclick="setImageFilter('none')" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded-md text-left transition flex items-center justify-between">
+                            <span>Normal / Sin filtro</span>
+                            <i class="fa-solid fa-circle text-[8px] text-slate-500"></i>
+                        </button>
+                        <button onclick="setImageFilter('sepia')" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-amber-200/80 rounded-md text-left transition flex items-center justify-between">
+                            <span>Warm Sepia</span>
+                            <i class="fa-solid fa-circle text-[8px] text-amber-600"></i>
+                        </button>
+                        <button onclick="setImageFilter('grayscale')" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 rounded-md text-left transition flex items-center justify-between">
+                            <span>Vintage Noir</span>
+                            <i class="fa-solid fa-circle text-[8px] text-slate-400"></i>
+                        </button>
+                        <button onclick="setImageFilter('contrast')" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-sky-300 rounded-md text-left transition flex items-center justify-between">
+                            <span>Alto Contraste</span>
+                            <i class="fa-solid fa-circle text-[8px] text-sky-400"></i>
+                        </button>
+                        <button onclick="setImageFilter('cyberpunk')" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-pink-400 rounded-md text-left transition flex items-center justify-between">
+                            <span>Cyberpunk Neon</span>
+                            <i class="fa-solid fa-circle text-[8px] text-pink-500"></i>
+                        </button>
+                        <button onclick="setImageFilter('warmglow')" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-orange-300 rounded-md text-left transition flex items-center justify-between">
+                            <span>Cálido Dorado</span>
+                            <i class="fa-solid fa-circle text-[8px] text-orange-400"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- STEP 3: AJUSTES DE TIPOGRAFÍA Y MARGENES -->
+            <div id="step3Container" class="space-y-6 hidden">
+                
+                <div class="bg-slate-950/50 p-4 rounded-xl border border-slate-800/80 space-y-4">
+                    <h3 class="text-xs font-semibold text-slate-200 tracking-wide uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-font text-amber-400"></i> Personalización de Texto
+                    </h3>
+
+                    <!-- Padding Range -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-300">Margen de Texto (Padding X)</span>
+                            <span id="paddingVal" class="text-amber-400 font-mono">2.5rem</span>
+                        </div>
+                        <input type="range" id="paddingRange" min="1.5" max="4.0" step="0.1" value="2.5" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                    </div>
+
+                    <!-- Font Select -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs text-slate-300">Tipografía del Texto Principal</label>
+                        <select id="fontSelect" class="w-full bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-md p-2.5 focus:ring-1 focus:ring-amber-500/50 outline-none">
+                            <option value="Poppins" selected>Poppins (Limpio & Moderno)</option>
+                            <option value="Playfair Display">Playfair Display (Elegante)</option>
+                            <option value="Cinzel">Cinzel (Clásico / Filosófico)</option>
+                            <option value="Montserrat">Montserrat (Geométrico)</option>
+                        </select>
+                    </div>
+
+                    <!-- Header Title -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs text-slate-300">Título Superior</label>
+                        <input type="text" id="titleInput" value="REFLEXIÓN DEL DÍA" class="w-full bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-md p-2.5 focus:ring-1 focus:ring-amber-500/50 outline-none">
+                    </div>
+
+                    <!-- IG Handle -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs text-slate-300">Firma / Instagram Handle</label>
+                        <input type="text" id="handleInput" value="@carloseur24" class="w-full bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-md p-2.5 focus:ring-1 focus:ring-amber-500/50 outline-none">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- STEP 4: PUBLICAR & AUTOMATIZACIÓN -->
+            <div id="step4Container" class="space-y-6 hidden">
+                
+                <!-- COHERENT BLOCK: DESCARGA -->
+                <div class="bg-slate-950/50 p-4 rounded-xl border border-slate-800/80 space-y-3">
+                    <h3 class="text-xs font-semibold text-slate-200 tracking-wide uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-download text-emerald-400"></i> Exportar Imagen
+                    </h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Descarga la imagen procesada en alta definición (1080x1920) lista para publicar en Instagram Stories.
+                    </p>
+                    <button id="downloadBtn" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-xs rounded-md transition flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-download"></i> Descargar Imagen & Marcar Usada
+                    </button>
+                </div>
+
+                <!-- COHERENT BLOCK: AUTOMATIZACIÓN -->
+                <div class="bg-slate-950/50 p-4 rounded-xl border border-slate-800/80 space-y-3">
+                    <h3 class="text-xs font-semibold text-slate-200 tracking-wide uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-amber-400"></i> Canales de Automatización
+                    </h3>
+
+                    <!-- Email Config -->
+                    <div class="p-3 bg-slate-900 rounded-md border border-slate-800/80 space-y-2">
+                        <div class="flex items-center gap-2 text-xs font-medium text-slate-300">
+                            <i class="fa-solid fa-envelope text-amber-400"></i> Enviar por Correo Email
+                        </div>
+                        <input type="email" id="emailDest" value="contacto@carloseur24.com" placeholder="Tu correo electrónico" class="w-full bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded p-2 outline-none">
+                        <button onclick="triggerEmailDraft()" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs rounded transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-paper-plane text-xs"></i> Borrador Email
+                        </button>
+                    </div>
+
+                    <!-- Telegram Config -->
+                    <div class="p-3 bg-slate-900 rounded-md border border-slate-800/80 space-y-2">
+                        <div class="flex items-center gap-2 text-xs font-medium text-slate-300">
+                            <i class="fa-brands fa-telegram text-sky-400"></i> Canal de Telegram
+                        </div>
+                        <button onclick="sendTelegramSim()" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-sky-400 text-xs rounded transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-share text-xs"></i> Enviar Cita a Telegram
+                        </button>
+                    </div>
+
+                    <!-- API / Webhook Export -->
+                    <button onclick="copyWebhookPayload()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-purple-300 text-xs rounded-md transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-code text-xs"></i> Copiar Payload JSON (Make/Zapier)
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- WIZARD NAVIGATION FOOTER -->
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex justify-between items-center">
+            <button id="prevStepBtn" onclick="navigateStep(-1)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-md transition flex items-center gap-1.5 opacity-50 cursor-not-allowed" disabled>
+                <i class="fa-solid fa-arrow-left text-xs"></i> Anterior
+            </button>
+            <span id="stepCounterLabel" class="text-xs text-slate-400 font-mono">1 de 4</span>
+            <button id="nextStepBtn" onclick="navigateStep(1)" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold text-xs rounded-md transition flex items-center gap-1.5 shadow-sm active:scale-95">
+                Siguiente <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+        </div>
+
+        <!-- FOOTER INFO -->
+        <div class="mt-4 text-center text-[11px] text-slate-500">
+            Diseñado para <span class="text-slate-400 font-medium">@carloseur24</span> • Social Media Suite
+        </div>
+    </aside>
+
+    <!-- RIGHT PANEL: PREVIEW CONTAINER -->
+    <main class="flex-1 bg-slate-950 p-4 md:p-8 flex flex-col items-center justify-center min-h-[600px] lg:min-h-screen">
+        
+        <!-- CANVAS DISPLAY WRAPPER -->
+        <div class="relative shadow-2xl rounded-2xl overflow-hidden border border-slate-800 max-w-[380px] w-full aspect-[9/16] bg-slate-900 flex items-center justify-center">
+            
+            <!-- Target Canvas -->
+            <canvas id="quoteCanvas" width="1080" height="1920" class="w-full h-full object-contain"></canvas>
+
+            <!-- Loading overlay indicator -->
+            <div id="canvasLoader" class="absolute inset-0 bg-slate-950/80 flex items-center justify-center gap-2 text-amber-400 text-sm font-medium opacity-0 pointer-events-none transition-opacity">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Generando...
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL: ADD NEW QUOTE -->
+    <div id="newQuoteModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+                <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-quote-left text-amber-500"></i> Añadir Nueva Cita
+                </h3>
+                <button id="closeModalBtn" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-300 mb-1">Cita / Frase (en Español)</label>
+                    <textarea id="newQuoteText" rows="3" placeholder="Escribe aquí la cita motivacional..." class="w-full bg-slate-950 border border-slate-800 text-slate-200 p-2.5 rounded-md focus:ring-1 focus:ring-amber-500 outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 mb-1">Autor / Fuente</label>
+                    <input type="text" id="newQuoteAuthor" placeholder="ej. Marcus Aurelius" class="w-full bg-slate-950 border border-slate-800 text-slate-200 p-2.5 rounded-md focus:ring-1 focus:ring-amber-500 outline-none">
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button id="cancelModalBtn" class="flex-1 py-2 bg-slate-800 text-slate-300 text-xs font-medium rounded-md hover:bg-slate-700 transition">
+                    Cancelar
+                </button>
+                <button id="saveQuoteBtn" class="flex-1 py-2 bg-amber-500 text-slate-950 text-xs font-semibold rounded-md hover:bg-amber-600 transition">
+                    Guardar Cita
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
+        <!-- ... existing quotes database ... -->
+        const initialQuotes = [
+            { id: 1, author: "Roald Dahl", text: "Si tienes buenos pensamientos, brillarán en tu rostro como rayos de sol y siempre lucirás encantador." },
+            { id: 2, author: "Neil Gaiman", text: "Lo único que tienes que nadie más tiene eres tú. Tu voz, tu mente, tu historia, tu visión. Así que escribe, dibuja, construye y vive como solo tú puedes." },
+            { id: 3, author: "Ari Meisel", text: "Nunca tendrás éxito si diseñas un plan para correr, pero detestas el acto mismo de correr." },
+            { id: 4, author: "Paulo Coelho", text: "Un día te despertarás y ya no habrá más tiempo para hacer las cosas que siempre has querido. Hazlo ahora." },
+            { id: 5, author: "Johann Wolfgang von Goethe", text: "Cualquier cosa que puedas hacer o creas poder hacer, empiézala. La acción tiene magia, gracia y poder en ella." },
+            { id: 6, author: "Anónimo", text: "Una vez que te das cuenta de lo hermoso que eres, te resultará difícil mantener la compañía de quienes no lo ven." },
+            { id: 7, author: "Simón Bolívar", text: "El talento sin probidad es un azote." },
+            { id: 8, author: "Henry Ford", text: "Tanto si piensas que puedes, como si piensas que no puedes, estás en lo cierto." },
+            { id: 9, author: "Robin Sharma", text: "Nos volvemos valientes cuando hacemos las cosas que tememos." },
+            { id: 10, author: "Bob Ross", text: "El talento es un interés perseguido. Cualquier cosa que estés dispuesto a practicar, la puedes hacer." },
+            { id: 11, author: "Ian Maclaren", text: "Sé amable; cada persona que conoces está librando una dura batalla." },
+            { id: 12, author: "Oliver Wendell Holmes", text: "La mente, una vez estirada por una nueva idea, nunca recupera sus dimensiones originales." },
+            { id: 13, author: "David Ogilvy", text: "El miedo lleva a la duda de uno mismo, que es el peor enemigo de la creatividad." },
+            { id: 14, author: "Walter Anderson", text: "Nada disminuye la ansiedad más rápido que la acción." },
+            { id: 15, author: "Dalai Lama", text: "No dejes que el comportamiento de los demás destruya tu paz interior." },
+            { id: 16, author: "Bruce Lee", text: "El guerrero exitoso es un hombre promedio con un enfoque similar al de un láser." },
+            { id: 17, author: "Elbert Hubbard", text: "La felicidad de esta vida depende menos de lo que te sucede que de la forma en que lo tomas." },
+            { id: 18, author: "Jim Rohn", text: "Si sigues haciendo lo que siempre has hecho, seguirás obteniendo lo que siempre has obtenido." },
+            { id: 19, author: "Ralph Waldo Emerson", text: "Por cada minuto que permaneces enojado, renuncias a sesenta segundos de paz mental." },
+            { id: 20, author: "Bob Marley", text: "Nunca sabes lo fuerte que eres hasta que ser fuerte es tu única opción." },
+            { id: 21, author: "Michelle Obama", text: "El éxito no se trata de cómo se ve tu vida para los demás. Se trata de cómo se siente para ti." },
+            { id: 22, author: "Jim Rohn", text: "La razón principal para fijar metas es incitarte a convertirte en la persona que se requiere para alcanzarlas." },
+            { id: 23, author: "Julio César", text: "La única forma de aprenderlo es haciéndolo." },
+            { id: 24, author: "Proverbio Chino", text: "No tengas miedo de crecer lentamente; ten miedo solo de quedarte quieto." },
+            { id: 25, author: "Richard Branson", text: "No aprendes a caminar siguiendo reglas. Aprendes haciendo y tropezando." },
+            { id: 26, author: "Arthur Ashe", text: "Empieza donde estás. Usa lo que tienes. Haz lo que puedas." },
+            { id: 27, author: "Séneca", text: "Mientras postergamos, la vida se nos escapa." },
+            { id: 28, author: "Carl Jung", text: "No esperes que tu vida cobre sentido, dáselo a través de tus acciones." },
+            { id: 29, author: "Og Mandino", text: "Para aprender y dominar cualquier cosa, uno tiene que pagar el precio en tiempo y concentración, hasta que se convierta en parte de la personalidad." },
+            { id: 30, author: "Aristóteles", text: "El placer en el trabajo pone la perfección en la obra." }
+        ];
+
+        // High-Resolution Image Library (Unsplash aesthetic presets)
+        const photoBgUrls = {
+            unsplash_mountains: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1080&q=80',
+            unsplash_forest: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1080&q=80',
+            unsplash_space: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1080&q=80'
+        };
+
+        // --- APP STATE ---
+        let quotesList = [];
+        let usedQuoteIds = new Set();
+        let currentQuote = null;
+        let bgStyle = 'mist';
+        let loadedBgImage = null;
+        let customAiImage = null;
+        
+        // Wizard State
+        let currentStep = 1;
+
+        // Image Effect State
+        let imageBlurPx = 0;
+        let imageRotationDeg = 0;
+        let currentImageFilter = 'none'; // 'none', 'sepia', 'grayscale', 'contrast', 'cyberpunk', 'warmglow'
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocalStorageData();
+            initQuotesList();
+            setupEventListeners();
+            renderCanvas();
+        });
+
+        // --- WIZARD NAVIGATION LOGIC ---
+        function goToStep(step) {
+            currentStep = step;
+            updateWizardUI();
+        }
+
+        function navigateStep(direction) {
+            currentStep = Math.min(Math.max(currentStep + direction, 1), 4);
+            updateWizardUI();
+        }
+
+        function updateWizardUI() {
+            // Containers
+            document.getElementById('step1Container').classList.toggle('hidden', currentStep !== 1);
+            document.getElementById('step2Container').classList.toggle('hidden', currentStep !== 2);
+            document.getElementById('step3Container').classList.toggle('hidden', currentStep !== 3);
+            document.getElementById('step4Container').classList.toggle('hidden', currentStep !== 4);
+
+            // Step buttons
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`stepBtn${i}`);
+                if (i === currentStep) {
+                    btn.className = "py-2 px-1 rounded-md bg-slate-800 text-amber-400 font-semibold border border-slate-700/60 shadow-sm flex flex-col items-center gap-1 transition";
+                } else {
+                    btn.className = "py-2 px-1 rounded-md text-slate-400 hover:text-slate-200 flex flex-col items-center gap-1 transition opacity-70 hover:opacity-100";
+                }
+            }
+
+            // Prev / Next button state
+            const prevBtn = document.getElementById('prevStepBtn');
+            const nextBtn = document.getElementById('nextStepBtn');
+            const counterLabel = document.getElementById('stepCounterLabel');
+
+            counterLabel.textContent = `${currentStep} de 4`;
+
+            if (currentStep === 1) {
+                prevBtn.disabled = true;
+                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                prevBtn.disabled = false;
+                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (currentStep === 4) {
+                nextBtn.innerHTML = `Finalizar <i class="fa-solid fa-check text-xs"></i>`;
+            } else {
+                nextBtn.innerHTML = `Siguiente <i class="fa-solid fa-arrow-right text-xs"></i>`;
+            }
+        }
+
+        // --- LOCAL STORAGE HELPERS ---
+        function loadLocalStorageData() {
+            const savedUsed = localStorage.getItem('carloseur24_used_quotes');
+            if (savedUsed) {
+                try { usedQuoteIds = new Set(JSON.parse(savedUsed)); } catch(e) { usedQuoteIds = new Set(); }
+            }
+
+            const savedCustom = localStorage.getItem('carloseur24_custom_quotes');
+            if (savedCustom) {
+                try {
+                    const customList = JSON.parse(savedCustom);
+                    quotesList = [...initialQuotes, ...customList];
+                } catch(e) { quotesList = [...initialQuotes]; }
+            } else {
+                quotesList = [...initialQuotes];
+            }
+        }
+
+        function saveUsedQuotes() {
+            localStorage.setItem('carloseur24_used_quotes', JSON.stringify(Array.from(usedQuoteIds)));
+        }
+
+        function saveCustomQuotes(customArray) {
+            localStorage.setItem('carloseur24_custom_quotes', JSON.stringify(customArray));
+        }
+
+        // --- POPULATE DROPDOWN & STATUS ---
+        function initQuotesList() {
+            const select = document.getElementById('quoteSelect');
+            select.innerHTML = '';
+
+            quotesList.forEach((q) => {
+                const isUsed = usedQuoteIds.has(q.id);
+                const option = document.createElement('option');
+                option.value = q.id;
+                option.textContent = `${isUsed ? '✓ [Usada] ' : '• [Nueva] '} ${q.text.substring(0, 32)}... (${q.author})`;
+                select.appendChild(option);
+            });
+
+            if (quotesList.length > 0) {
+                currentQuote = quotesList[0];
+                select.value = currentQuote.id;
+                updateStatusBadge();
+            }
+        }
+
+        function updateStatusBadge() {
+            const badge = document.getElementById('quoteStatusBadge');
+            if (!currentQuote) return;
+            const isUsed = usedQuoteIds.has(currentQuote.id);
+            
+            if (isUsed) {
+                badge.textContent = 'USADA';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20';
+            } else {
+                badge.textContent = 'NUEVA';
+                badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        function setupEventListeners() {
+            const select = document.getElementById('quoteSelect');
+            select.addEventListener('change', (e) => {
+                const selectedId = parseInt(e.target.value);
+                currentQuote = quotesList.find(q => q.id === selectedId) || quotesList[0];
+                updateStatusBadge();
+                renderCanvas();
+            });
+
+            document.getElementById('overlayRange').addEventListener('input', (e) => {
+                document.getElementById('overlayVal').textContent = `${e.target.value}%`;
+                renderCanvas();
+            });
+
+            document.getElementById('blurRange').addEventListener('input', (e) => {
+                imageBlurPx = parseInt(e.target.value);
+                document.getElementById('blurVal').textContent = `${imageBlurPx}px`;
+                renderCanvas();
+            });
+
+            document.getElementById('rotationRange').addEventListener('input', (e) => {
+                imageRotationDeg = parseInt(e.target.value);
+                document.getElementById('rotationVal').textContent = `${imageRotationDeg}°`;
+                renderCanvas();
+            });
+
+            document.getElementById('paddingRange').addEventListener('input', (e) => {
+                document.getElementById('paddingVal').textContent = `${parseFloat(e.target.value).toFixed(1)}rem`;
+                renderCanvas();
+            });
+
+            document.getElementById('fontSelect').addEventListener('change', renderCanvas);
+            document.getElementById('titleInput').addEventListener('input', renderCanvas);
+            document.getElementById('handleInput').addEventListener('input', renderCanvas);
+
+            // Random Unused
+            document.getElementById('randomUnusedBtn').addEventListener('click', pickRandomUnused);
+
+            // Toggle Used
+            document.getElementById('toggleUsedBtn').addEventListener('click', () => {
+                if (!currentQuote) return;
+                if (usedQuoteIds.has(currentQuote.id)) {
+                    usedQuoteIds.delete(currentQuote.id);
+                } else {
+                    usedQuoteIds.add(currentQuote.id);
+                }
+                saveUsedQuotes();
+                initQuotesList();
+                if (currentQuote) select.value = currentQuote.id;
+                updateStatusBadge();
+            });
+
+            // Download
+            document.getElementById('downloadBtn').addEventListener('click', downloadCanvas);
+
+            // Modal Controls
+            document.getElementById('openNewModalBtn').addEventListener('click', () => {
+                document.getElementById('newQuoteModal').classList.remove('hidden');
+            });
+
+            const closeModal = () => document.getElementById('newQuoteModal').classList.add('hidden');
+            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+            document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+
+            document.getElementById('saveQuoteBtn').addEventListener('click', () => {
+                const text = document.getElementById('newQuoteText').value.trim();
+                const author = document.getElementById('newQuoteAuthor').value.trim() || 'Desconocido';
+
+                if (!text) {
+                    alert('Por favor escribe una cita válida.');
+                    return;
+                }
+
+                const newObj = {
+                    id: Date.now(),
+                    author: author,
+                    text: text
+                };
+
+                const savedCustom = localStorage.getItem('carloseur24_custom_quotes');
+                let customArr = savedCustom ? JSON.parse(savedCustom) : [];
+                customArr.push(newObj);
+                saveCustomQuotes(customArr);
+
+                quotesList.push(newObj);
+                initQuotesList();
+                
+                select.value = newObj.id;
+                currentQuote = newObj;
+                updateStatusBadge();
+                renderCanvas();
+
+                document.getElementById('newQuoteText').value = '';
+                document.getElementById('newQuoteAuthor').value = '';
+                closeModal();
+            });
+        }
+
+        function setImageFilter(filterType) {
+            currentImageFilter = filterType;
+            renderCanvas();
+        }
+
+        // --- RANDOM FRESH QUOTE SELECTION ---
+        function pickRandomUnused() {
+            const unusedList = quotesList.filter(q => !usedQuoteIds.has(q.id));
+            if (unusedList.length === 0) {
+                alert('¡Felicidades! Has utilizado todas las citas registradas. Se seleccionará una aleatoria.');
+                const randomIndex = Math.floor(Math.random() * quotesList.length);
+                currentQuote = quotesList[randomIndex];
+            } else {
+                const randomIndex = Math.floor(Math.random() * unusedList.length);
+                currentQuote = unusedList[randomIndex];
+            }
+            const select = document.getElementById('quoteSelect');
+            select.value = currentQuote.id;
+            updateStatusBadge();
+            renderCanvas();
+        }
+
+        // --- BACKGROUND PRESETS & LOADERS ---
+        function changeBackground(style) {
+            bgStyle = style;
+            if (photoBgUrls[style]) {
+                const loader = document.getElementById('canvasLoader');
+                if (loader) loader.classList.remove('opacity-0');
+
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = photoBgUrls[style];
+                img.onload = () => {
+                    loadedBgImage = img;
+                    if (loader) loader.classList.add('opacity-0');
+                    renderCanvas();
+                };
+            } else {
+                renderCanvas();
+            }
+        }
+
+        // --- AI GENERATION WITH NANO BANANA ---
+        async function generateAiBackground() {
+            const promptInput = document.getElementById('aiPromptInput').value.trim();
+            const prompt = promptInput || (currentQuote ? `A majestic background for quote: "${currentQuote.text}". Atmospheric, dark aesthetic` : 'Ethereal glowing alpine peak surrounded by soft mist');
+
+            const statusMsg = document.getElementById('aiStatusMsg');
+            const loader = document.getElementById('canvasLoader');
+            
+            statusMsg.classList.remove('hidden');
+            if (loader) loader.classList.remove('opacity-0');
+
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{
+                        role: 'user',
+                        parts: [{ text: prompt }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ['IMAGE'],
+                        imageConfig: { aspectRatio: "9:16" }
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+                if (part && part.inlineData) {
+                    const imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                    const img = new Image();
+                    img.src = imageUrl;
+                    img.onload = () => {
+                        customAiImage = img;
+                        bgStyle = 'custom_ai';
+                        renderCanvas();
+                        statusMsg.innerText = '¡Imagen generada con éxito!';
+                        setTimeout(() => statusMsg.classList.add('hidden'), 3000);
+                    };
+                } else {
+                    throw new Error('Sin respuesta válida.');
+                }
+            } catch (err) {
+                console.error(err);
+                statusMsg.innerText = '⚠️ Error al generar. Reintentando...';
+                setTimeout(() => statusMsg.classList.add('hidden'), 3000);
+            } finally {
+                if (loader) loader.classList.add('opacity-0');
+            }
+        }
+
+        // --- CANVAS RENDERING ENGINE WITH ADVANCED EFFECTS & FILTERS ---
+        function renderCanvas() {
+            const canvas = document.getElementById('quoteCanvas');
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width;  // 1080
+            const H = canvas.height; // 1920
+
+            if (!currentQuote) return;
+
+            ctx.save();
+            ctx.clearRect(0, 0, W, H);
+
+            // Apply Image Filters to Context
+            let filterStr = '';
+            if (imageBlurPx > 0) filterStr += `blur(${imageBlurPx}px) `;
+            
+            if (currentImageFilter === 'sepia') filterStr += 'sepia(80%) ';
+            else if (currentImageFilter === 'grayscale') filterStr += 'grayscale(100%) ';
+            else if (currentImageFilter === 'contrast') filterStr += 'contrast(150%) brightness(90%) ';
+            else if (currentImageFilter === 'cyberpunk') filterStr += 'hue-rotate(280deg) saturate(180%) ';
+            else if (currentImageFilter === 'warmglow') filterStr += 'sepia(30%) saturate(140%) ';
+
+            ctx.filter = filterStr.trim() || 'none';
+
+            // Apply Image Rotation
+            if (imageRotationDeg !== 0) {
+                ctx.translate(W / 2, H / 2);
+                ctx.rotate((imageRotationDeg * Math.PI) / 180);
+                ctx.translate(-W / 2, -H / 2);
+            }
+
+            // 1. Draw Background Image
+            if (bgStyle === 'custom_ai' && customAiImage) {
+                ctx.drawImage(customAiImage, 0, 0, W, H);
+            } else if (photoBgUrls[bgStyle] && loadedBgImage) {
+                ctx.drawImage(loadedBgImage, 0, 0, W, H);
+            } else {
+                drawMountainBackground(ctx, W, H, bgStyle);
+            }
+
+            ctx.restore(); // Reset filter and rotation transform for overlays and text
+
+            // 2. Dark Overlay Layer
+            const overlayPercent = parseInt(document.getElementById('overlayRange').value) / 100;
+            ctx.fillStyle = `rgba(15, 23, 42, ${overlayPercent})`;
+            ctx.fillRect(0, 0, W, H);
+
+            // 3. User Parameters
+            const fontName = document.getElementById('fontSelect').value;
+            const paddingRem = parseFloat(document.getElementById('paddingRange').value);
+            const paddingPx = paddingRem * 36;
+            const titleText = document.getElementById('titleInput').value.toUpperCase();
+            const handleText = document.getElementById('handleInput').value;
+
+            // 4. Draw Header Title
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = `600 38px 'Montserrat', sans-serif`;
+            ctx.letterSpacing = '4px';
+            ctx.fillText(titleText, W / 2, 280);
+
+            // 5. Draw Quote Text
+            const maxWidth = W - (paddingPx * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `400 54px '${fontName}', sans-serif`;
+            
+            const quoteContent = `“${currentQuote.text}”`;
+            const lines = wrapText(ctx, quoteContent, maxWidth);
+            const lineHeight = 82;
+            const totalTextHeight = lines.length * lineHeight;
+            
+            let startY = (H / 2) - (totalTextHeight / 2) + 40;
+
+            lines.forEach((line, idx) => {
+                ctx.fillText(line, W / 2, startY + (idx * lineHeight));
+            });
+
+            // 6. Draw Author
+            ctx.fillStyle = '#d1d5db';
+            ctx.font = `italic 300 40px '${fontName}', sans-serif`;
+            ctx.fillText(`— ${currentQuote.author}`, W / 2, startY + (lines.length * lineHeight) + 60);
+
+            // 7. Draw Footer / Branding
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = `500 36px 'Montserrat', sans-serif`;
+            ctx.fillText(handleText, W / 2, H - 200);
+
+            // Minimalist divider line
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo((W / 2) - 60, H - 260);
+            ctx.lineTo((W / 2) + 60, H - 260);
+            ctx.stroke();
+        }
+
+        // --- PROCEDURAL MOUNTAIN BACKGROUND GENERATOR ---
+        function drawMountainBackground(ctx, W, H, style) {
+            let grad = ctx.createLinearGradient(0, 0, 0, H);
+            
+            if (style === 'dusk') {
+                grad.addColorStop(0, '#0f172a');
+                grad.addColorStop(0.3, '#1e1b4b');
+                grad.addColorStop(0.65, '#701a75');
+                grad.addColorStop(1, '#f59e0b');
+            } else if (style === 'dark') {
+                grad.addColorStop(0, '#020617');
+                grad.addColorStop(0.5, '#0f172a');
+                grad.addColorStop(1, '#1e293b');
+            } else {
+                grad.addColorStop(0, '#0b1329');
+                grad.addColorStop(0.4, '#1c2d42');
+                grad.addColorStop(0.8, '#3b5166');
+                grad.addColorStop(1, '#64748b');
+            }
+            
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            ctx.save();
+            ctx.fillStyle = '#ffffff';
+            for (let i = 0; i < 40; i++) {
+                const rx = (Math.sin(i * 99) * 0.5 + 0.5) * W;
+                const ry = (Math.cos(i * 33) * 0.5 + 0.5) * (H * 0.5);
+                const size = (i % 3 === 0) ? 2.5 : 1.5;
+                ctx.globalAlpha = 0.2 + (i % 5) * 0.15;
+                ctx.beginPath();
+                ctx.arc(rx, ry, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+
+            drawMountainRange(ctx, W, H * 0.55, 120, '#1e293b', 0.5);
+            drawMountainRange(ctx, W, H * 0.65, 180, '#0f172a', 0.8);
+
+            let fogGrad = ctx.createLinearGradient(0, H * 0.4, 0, H);
+            fogGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+            fogGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.15)');
+            fogGrad.addColorStop(1, 'rgba(15, 23, 42, 0.95)');
+            ctx.fillStyle = fogGrad;
+            ctx.fillRect(0, H * 0.3, W, H * 0.7);
+        }
+
+        function drawMountainRange(ctx, W, baseY, height, color, opacity) {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(0, baseY);
+
+            const points = 8;
+            const step = W / points;
+            
+            for (let i = 0; i <= points; i++) {
+                const x = i * step;
+                const y = baseY - (Math.sin(i * 1.5) * height) - (Math.cos(i * 2.1) * (height * 0.5));
+                ctx.lineTo(x, y);
+            }
+
+            ctx.lineTo(W, baseY + 800);
+            ctx.lineTo(0, baseY + 800);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // --- HELPER: TEXT WRAPPING ---
+        function wrapText(ctx, text, maxWidth) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = words[0] || '';
+
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const width = ctx.measureText(currentLine + " " + word).width;
+                if (width < maxWidth) {
+                    currentLine += " " + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // --- DOWNLOAD ACTION ---
+        function downloadCanvas() {
+            const canvas = document.getElementById('quoteCanvas');
+            
+            if (currentQuote) {
+                usedQuoteIds.add(currentQuote.id);
+                saveUsedQuotes();
+                initQuotesList();
+                document.getElementById('quoteSelect').value = currentQuote.id;
+                updateStatusBadge();
+            }
+
+            try {
+                const link = document.createElement('a');
+                const cleanAuthor = currentQuote ? currentQuote.author.replace(/[^a-z0-9]/gi, '_') : 'cita';
+                link.download = `Reflexion_Carloseur24_${cleanAuthor}.png`;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (err) {
+                console.error('Error lowering canvas data URL:', err);
+                alert('No se pudo descargar la imagen directamente debido a restricciones de seguridad de la imagen cargada.');
+            }
+        }
+
+        // --- AUTOMATION SIMULATION HELPERS ---
+        function triggerEmailDraft() {
+            if (!currentQuote) return;
+            const email = document.getElementById('emailDest').value || 'contacto@carloseur24.com';
+            const subject = encodeURIComponent(`Reflexión del Día - @carloseur24`);
+            const body = encodeURIComponent(`" ${currentQuote.text} "\n\n— ${currentQuote.author}\n\nCompartido vía Reflexiones Suite.`);
+            window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+        }
+
+        function sendTelegramSim() {
+            if (!currentQuote) return;
+            alert(`[Simulación Telegram]\nMensaje preparado para enviar:\n\n" ${currentQuote.text} "\n— ${currentQuote.author}\n\nCanal: @carloseur24`);
+        }
+
+        function copyWebhookPayload() {
+            if (!currentQuote) return;
+            const payload = {
+                timestamp: new Date().toISOString(),
+                brand: "@carloseur24",
+                quote_id: currentQuote.id,
+                quote_text: currentQuote.text,
+                author: currentQuote.author,
+                status: usedQuoteIds.has(currentQuote.id) ? "used" : "new"
+            };
+            
+            const tempInput = document.createElement('textarea');
+            tempInput.value = JSON.stringify(payload, null, 2);
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            alert('¡Payload JSON copiado al portapapeles!');
+        }
+    </script>
+</body>
+</html>
